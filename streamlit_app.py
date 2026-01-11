@@ -1,0 +1,132 @@
+import pandas as pd
+import streamlit as st
+import joblib
+from pathlib import Path
+
+# -----------------------------
+# Configurações da página
+# -----------------------------
+st.set_page_config(
+    page_title="Preditor de Obesidade - Tech Challenge",
+    page_icon="🏥",
+    layout="centered"
+)
+
+st.title("🏥 Preditor de Nível de Obesidade")
+st.write(
+    "Aplicação preditiva para apoiar a equipe médica na avaliação do nível de obesidade, "
+    "com base em dados demográficos e comportamentais."
+)
+
+# -----------------------------
+# Carregamento do modelo
+# -----------------------------
+@st.cache_resource
+def load_model():
+    model_path = Path("models/pipeline_obesity_model.joblib")
+    if not model_path.exists():
+        st.error("Modelo não encontrado. Verifique se o arquivo está em models/pipeline_obesity_model.joblib")
+        st.stop()
+    return joblib.load(model_path)
+
+model = load_model()
+
+# -----------------------------
+# Opções (categorias) conforme dataset
+# -----------------------------
+GENDER_OPTIONS = ["Female", "Male"]
+YES_NO = ["no", "yes"]
+FREQ_OPTIONS = ["no", "Sometimes", "Frequently", "Always"]
+MTRANS_OPTIONS = ["Automobile", "Bike", "Motorbike", "Public_Transportation", "Walking"]
+
+st.subheader("🧾 Dados do paciente")
+
+with st.form("patient_form"):
+    st.markdown("### Informações demográficas e antropométricas")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        gender = st.selectbox("Gender (Gênero)", GENDER_OPTIONS)
+        age = st.number_input("Age (Idade)", min_value=0.0, max_value=120.0, value=24.0, step=1.0)
+        height = st.number_input("Height (Altura em metros)", min_value=0.5, max_value=2.5, value=1.70, step=0.01)
+
+    with col2:
+        weight = st.number_input("Weight (Peso em kg)", min_value=10.0, max_value=300.0, value=86.0, step=0.5)
+        family_history = st.selectbox("family_history (Histórico familiar de sobrepeso?)", YES_NO)
+        smoke = st.selectbox("SMOKE (Fuma?)", YES_NO)
+
+    st.markdown("### Hábitos alimentares e estilo de vida")
+
+    col3, col4 = st.columns(2)
+    with col3:
+        favc = st.selectbox("FAVC (Alimentos altamente calóricos com frequência?)", YES_NO)
+        caec = st.selectbox("CAEC (Come entre refeições?)", FREQ_OPTIONS)
+        calc = st.selectbox("CALC (Frequência de consumo de álcool)", FREQ_OPTIONS)
+        scc = st.selectbox("SCC (Monitora calorias diariamente?)", YES_NO)
+
+    with col4:
+        mtrans = st.selectbox("MTRANS (Meio de transporte)", MTRANS_OPTIONS)
+        fcvc = st.slider("FCVC (Consumo de vegetais)", min_value=1.0, max_value=3.0, value=2.0, step=0.1)
+        ncp = st.slider("NCP (Número de refeições principais)", min_value=1.0, max_value=4.0, value=3.0, step=0.1)
+        ch2o = st.slider("CH2O (Consumo de água)", min_value=1.0, max_value=3.0, value=2.0, step=0.1)
+
+    st.markdown("### Atividade física e tempo de tela")
+    col5, col6 = st.columns(2)
+    with col5:
+        faf = st.slider("FAF (Frequência de atividade física)", min_value=0.0, max_value=3.0, value=1.0, step=0.1)
+    with col6:
+        tue = st.slider("TUE (Tempo de uso de tecnologia)", min_value=0.0, max_value=2.0, value=1.0, step=0.1)
+
+    submitted = st.form_submit_button("🔎 Predizer nível de obesidade")
+
+# -----------------------------
+# Predição
+# -----------------------------
+if submitted:
+    # Feature Engineering no input (mesmo do treino)
+    bmi = weight / (height ** 2)
+
+    # Monta um dataframe com as mesmas colunas do treino
+    input_data = pd.DataFrame([{
+        "Gender": gender,
+        "Age": float(age),
+        "Height": float(height),
+        "Weight": float(weight),
+        "family_history": family_history,
+        "FAVC": favc,
+        "FCVC": float(fcvc),
+        "NCP": float(ncp),
+        "CAEC": caec,
+        "SMOKE": smoke,
+        "CH2O": float(ch2o),
+        "SCC": scc,
+        "FAF": float(faf),
+        "TUE": float(tue),
+        "CALC": calc,
+        "MTRANS": mtrans,
+        "BMI": float(bmi),
+    }])
+
+    pred = model.predict(input_data)[0]
+
+    st.success(f"✅ Predição do modelo: **{pred}**")
+
+    # Probabilidades (se o modelo suportar)
+    if hasattr(model, "predict_proba"):
+        proba = model.predict_proba(input_data)[0]
+        classes = model.classes_
+
+        proba_df = pd.DataFrame({
+            "Classe": classes,
+            "Probabilidade": proba
+        }).sort_values("Probabilidade", ascending=False)
+
+        st.markdown("### 📊 Probabilidades por classe")
+        st.dataframe(proba_df, use_container_width=True)
+
+    st.markdown("---")
+    st.markdown("### ℹ️ Observação")
+    st.write(
+        "Este sistema é um apoio à decisão e não substitui avaliação clínica. "
+        "Os resultados devem ser interpretados por profissionais de saúde."
+    )
