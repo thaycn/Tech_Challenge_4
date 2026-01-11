@@ -82,23 +82,25 @@ with st.form("patient_form"):
     with col4:
         mtrans = st.selectbox("MTRANS (Meio de transporte)", MTRANS_OPTIONS)
 
+        st.caption("Obs.: algumas variáveis numéricas podem assumir valores decimais (ex.: 1.7), pois vêm de escalas contínuas no dataset.")
+
         fcvc = st.slider(
             "FCVC (Consumo de vegetais)",
             min_value=1.0, max_value=3.0, value=2.0, step=0.1
         )
-        st.caption("Escala 1–3: **1 = baixo**, **2 = moderado**, **3 = alto**. (Decimais são aceitos, ex.: 2.3)")
+        st.caption("1 = baixo consumo • 2 = moderado • 3 = alto")
 
         ncp = st.slider(
             "NCP (Número de refeições principais)",
             min_value=1.0, max_value=4.0, value=3.0, step=0.1
         )
-        st.caption("Escala 1–4: número de refeições principais/dia. (Decimais são aceitos no dataset)")
+        st.caption("Quantidade de refeições principais por dia.")
 
         ch2o = st.slider(
             "CH2O (Consumo de água)",
             min_value=1.0, max_value=3.0, value=2.0, step=0.1
         )
-        st.caption("Escala 1–3: **1 = baixo**, **2 = moderado**, **3 = alto**. (Decimais são aceitos, ex.: 1.7)")
+        st.caption("1 = baixa ingestão • 2 = moderada • 3 = alta")
 
     st.markdown("### Atividade física e tempo de tela")
     col5, col6 = st.columns(2)
@@ -107,14 +109,14 @@ with st.form("patient_form"):
             "FAF (Frequência de atividade física)",
             min_value=0.0, max_value=3.0, value=1.0, step=0.1
         )
-        st.caption("Escala 0–3: **0 = nenhuma**, **1 = baixa**, **2 = moderada**, **3 = alta**. (Decimais são aceitos, ex.: 1.7)")
+        st.caption("0 = nenhuma • 1 = baixa • 2 = moderada • 3 = alta")
 
     with col6:
         tue = st.slider(
             "TUE (Tempo de uso de tecnologia)",
             min_value=0.0, max_value=2.0, value=1.0, step=0.1
         )
-        st.caption("Escala 0–2: **0 = baixo**, **1 = moderado**, **2 = alto**. (No enunciado: TER)")
+        st.caption("0 = baixo • 1 = moderado • 2 = alto (equivalente a TER no enunciado)")
 
     submitted = st.form_submit_button("🔎 Predizer nível de obesidade")
 
