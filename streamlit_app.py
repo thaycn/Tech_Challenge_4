@@ -18,6 +18,21 @@ st.write(
     "com base em dados demográficos e comportamentais."
 )
 
+with st.expander("📌 Como interpretar as escalas numéricas do dataset"):
+    st.markdown(
+        """
+Algumas variáveis do dataset foram registradas como **escalas numéricas contínuas**, por isso podem assumir **valores decimais** (ex.: 1.7).  
+Isso **não é erro** — é a forma de codificação dos dados.
+
+**Escalas utilizadas:**
+- **FCVC (vegetais):** 1 = baixo, 2 = moderado, 3 = alto  
+- **CH2O (água):** 1 = baixo, 2 = moderado, 3 = alto  
+- **FAF (atividade física):** 0 = nenhuma, 1 = baixa, 2 = moderada, 3 = alta  
+- **TUE (tempo de tecnologia):** 0 = baixo, 1 = moderado, 2 = alto  
+- **NCP (refeições principais):** escala entre 1 e 4 (pode aparecer como valor decimal no dataset)  
+        """
+    )
+
 # -----------------------------
 # Carregamento do modelo
 # -----------------------------
@@ -47,35 +62,95 @@ with st.form("patient_form"):
     col1, col2 = st.columns(2)
     with col1:
         gender = st.selectbox("Gender (Gênero)", GENDER_OPTIONS)
-        age = st.number_input("Age (Idade)", min_value=0.0, max_value=120.0, value=24.0, step=1.0)
-        height = st.number_input("Height (Altura em metros)", min_value=0.5, max_value=2.5, value=1.70, step=0.01)
+        age = st.number_input(
+            "Age (Idade)",
+            min_value=0.0, max_value=120.0, value=24.0, step=1.0,
+            help="Idade em anos. No dataset, os valores são numéricos (float), mas representam idade em anos."
+        )
+        height = st.number_input(
+            "Height (Altura em metros)",
+            min_value=0.5, max_value=2.5, value=1.70, step=0.01,
+            help="Altura em metros (ex.: 1.70)."
+        )
 
     with col2:
-        weight = st.number_input("Weight (Peso em kg)", min_value=10.0, max_value=300.0, value=86.0, step=0.5)
-        family_history = st.selectbox("family_history (Histórico familiar de sobrepeso?)", YES_NO)
-        smoke = st.selectbox("SMOKE (Fuma?)", YES_NO)
+        weight = st.number_input(
+            "Weight (Peso em kg)",
+            min_value=10.0, max_value=300.0, value=86.0, step=0.5,
+            help="Peso em quilogramas."
+        )
+        family_history = st.selectbox(
+            "family_history (Histórico familiar de sobrepeso?)",
+            YES_NO,
+            help="Indica se há histórico familiar de excesso de peso (yes/no)."
+        )
+        smoke = st.selectbox(
+            "SMOKE (Fuma?)",
+            YES_NO,
+            help="Indica se a pessoa fuma (yes/no)."
+        )
 
     st.markdown("### Hábitos alimentares e estilo de vida")
 
     col3, col4 = st.columns(2)
     with col3:
-        favc = st.selectbox("FAVC (Alimentos altamente calóricos com frequência?)", YES_NO)
-        caec = st.selectbox("CAEC (Come entre refeições?)", FREQ_OPTIONS)
-        calc = st.selectbox("CALC (Frequência de consumo de álcool)", FREQ_OPTIONS)
-        scc = st.selectbox("SCC (Monitora calorias diariamente?)", YES_NO)
+        favc = st.selectbox(
+            "FAVC (Alimentos altamente calóricos com frequência?)",
+            YES_NO,
+            help="Indica consumo frequente de alimentos altamente calóricos (yes/no)."
+        )
+        caec = st.selectbox(
+            "CAEC (Come entre refeições?)",
+            FREQ_OPTIONS,
+            help="Frequência de comer entre as refeições (no/Sometimes/Frequently/Always)."
+        )
+        calc = st.selectbox(
+            "CALC (Frequência de consumo de álcool)",
+            FREQ_OPTIONS,
+            help="Frequência de consumo de álcool (no/Sometimes/Frequently/Always)."
+        )
+        scc = st.selectbox(
+            "SCC (Monitora calorias diariamente?)",
+            YES_NO,
+            help="Indica se a pessoa monitora calorias diariamente (yes/no)."
+        )
 
     with col4:
-        mtrans = st.selectbox("MTRANS (Meio de transporte)", MTRANS_OPTIONS)
-        fcvc = st.slider("FCVC (Consumo de vegetais)", min_value=1.0, max_value=3.0, value=2.0, step=0.1)
-        ncp = st.slider("NCP (Número de refeições principais)", min_value=1.0, max_value=4.0, value=3.0, step=0.1)
-        ch2o = st.slider("CH2O (Consumo de água)", min_value=1.0, max_value=3.0, value=2.0, step=0.1)
+        mtrans = st.selectbox(
+            "MTRANS (Meio de transporte)",
+            MTRANS_OPTIONS,
+            help="Meio de transporte predominante (Automobile/Bike/Motorbike/Public_Transportation/Walking)."
+        )
+        fcvc = st.slider(
+            "FCVC (Consumo de vegetais)",
+            min_value=1.0, max_value=3.0, value=2.0, step=0.1,
+            help="Escala de 1 a 3: 1 = baixo consumo, 2 = moderado, 3 = alto. Pode assumir valores decimais (ex.: 2.3) no dataset."
+        )
+        ncp = st.slider(
+            "NCP (Número de refeições principais)",
+            min_value=1.0, max_value=4.0, value=3.0, step=0.1,
+            help="Escala de 1 a 4 para número de refeições principais/dia. Pode aparecer com decimais no dataset."
+        )
+        ch2o = st.slider(
+            "CH2O (Consumo de água)",
+            min_value=1.0, max_value=3.0, value=2.0, step=0.1,
+            help="Escala de 1 a 3: 1 = baixa ingestão, 2 = moderada, 3 = alta. Pode assumir valores decimais (ex.: 1.7) no dataset."
+        )
 
     st.markdown("### Atividade física e tempo de tela")
     col5, col6 = st.columns(2)
     with col5:
-        faf = st.slider("FAF (Frequência de atividade física)", min_value=0.0, max_value=3.0, value=1.0, step=0.1)
+        faf = st.slider(
+            "FAF (Frequência de atividade física)",
+            min_value=0.0, max_value=3.0, value=1.0, step=0.1,
+            help="Escala de 0 a 3: 0 = nenhuma, 1 = baixa, 2 = moderada, 3 = alta. Decimais são aceitos (ex.: 1.7) conforme o dataset."
+        )
     with col6:
-        tue = st.slider("TUE (Tempo de uso de tecnologia)", min_value=0.0, max_value=2.0, value=1.0, step=0.1)
+        tue = st.slider(
+            "TUE (Tempo de uso de tecnologia)",
+            min_value=0.0, max_value=2.0, value=1.0, step=0.1,
+            help="Escala de 0 a 2 (no dataset): 0 = baixo, 1 = moderado, 2 = alto. É equivalente ao 'TER' descrito no enunciado."
+        )
 
     submitted = st.form_submit_button("🔎 Predizer nível de obesidade")
 
@@ -85,6 +160,8 @@ with st.form("patient_form"):
 if submitted:
     # Feature Engineering no input (mesmo do treino)
     bmi = weight / (height ** 2)
+
+    st.info(f"🧮 BMI (IMC) calculado automaticamente: **{bmi:.2f}**")
 
     # Monta um dataframe com as mesmas colunas do treino
     input_data = pd.DataFrame([{
@@ -108,7 +185,6 @@ if submitted:
     }])
 
     pred = model.predict(input_data)[0]
-
     st.success(f"✅ Predição do modelo: **{pred}**")
 
     # Probabilidades (se o modelo suportar)
