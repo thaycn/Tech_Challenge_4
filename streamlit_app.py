@@ -88,7 +88,7 @@ with st.form("patient_form"):
             "FCVC (Consumo de vegetais)",
             min_value=1.0, max_value=3.0, value=2.0, step=0.1
         )
-        st.caption("1 = baixo consumo • 2 = moderado • 3 = alto")
+        st.caption("1 = baixo consumo | 2 = moderado | 3 = alto")
 
         ncp = st.slider(
             "NCP (Número de refeições principais)",
@@ -100,7 +100,7 @@ with st.form("patient_form"):
             "CH2O (Consumo de água)",
             min_value=1.0, max_value=3.0, value=2.0, step=0.1
         )
-        st.caption("1 = baixa ingestão • 2 = moderada • 3 = alta")
+        st.caption("1 = baixa ingestão | 2 = moderada | 3 = alta")
 
     st.markdown("### Atividade física e tempo de tela")
     col5, col6 = st.columns(2)
@@ -109,14 +109,14 @@ with st.form("patient_form"):
             "FAF (Frequência de atividade física)",
             min_value=0.0, max_value=3.0, value=1.0, step=0.1
         )
-        st.caption("0 = nenhuma • 1 = baixa • 2 = moderada • 3 = alta")
+        st.caption("0 = nenhuma | 1 = baixa | 2 = moderada | 3 = alta")
 
     with col6:
         tue = st.slider(
             "TUE (Tempo de uso de tecnologia)",
             min_value=0.0, max_value=2.0, value=1.0, step=0.1
         )
-        st.caption("0 = baixo • 1 = moderado • 2 = alto (equivalente a TER no enunciado)")
+        st.caption("0 = baixo | 1 = moderado | 2 = alto (equivalente a TER no enunciado)")
 
     submitted = st.form_submit_button("🔎 Predizer nível de obesidade")
 
